@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import java.util.List;
+
 import org.hibernate.grammars.hql.HqlParser.EntityNaturalIdReferenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,26 +18,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.demo.entity.Product;
+import com.example.demo.entity.Todo;
 import com.example.demo.handlers.ResponseHandler;
-import com.example.demo.service.ProductService;
+import com.example.demo.service.TodoService;
 
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/products")
-public class ProductController {
+@RequestMapping("/todos")
+public class TodoController {
 
     @Autowired
-    private ProductService productService;
+    private TodoService todoService;
 
     @PostMapping("/add")
-    public ResponseEntity<Object> addProduct(@RequestBody @Valid Product product){
+    public ResponseEntity<Object> addTodo(@RequestBody @Valid Todo todo){
        
-       System.out.println(product); 
         try {
-            Product addedProduct = productService.addProduct(product);
-            return ResponseHandler.handleResponse("Successfully add product", HttpStatus.OK, addedProduct);
+            Todo addedTodo = todoService.addTodo(todo);
+            return ResponseHandler.handleResponse("Successfully add Todo", HttpStatus.OK, addedTodo);
         
         } catch (Exception e) {
             // TODO: handle exception
@@ -45,12 +46,12 @@ public class ProductController {
 
 
     @PutMapping("/edit")
-    public ResponseEntity<Object> editProduct(@RequestBody @Valid Product product){
+    public ResponseEntity<Object> editProduct(@RequestBody @Valid Todo todo){
         try {
-            Product editProduct = productService.editProduct(product);
-            if(editProduct!=null){
+            Todo editTodo = todoService.editTodo(todo);
+            if(editTodo!=null){
 
-                return ResponseHandler.handleResponse("Successfully edit product", HttpStatus.OK, editProduct);
+                return ResponseHandler.handleResponse("Successfully edit Todo", HttpStatus.OK, editTodo);
             }else{
                 return ResponseHandler.handleResponse("Product Id not exist", HttpStatus.BAD_REQUEST, null);
 
@@ -66,8 +67,8 @@ public class ProductController {
     public ResponseEntity<Object> deleteProduct(@PathVariable Long id){
         
         try{
-            productService.deleteProduct(id);
-            return ResponseHandler.handleResponse("Successfully delete product", HttpStatus.OK, null);
+            todoService.deleteTodo(id);
+            return ResponseHandler.handleResponse("Successfully delete Todo", HttpStatus.OK, null);
         }catch(Exception e){
             
             return ResponseHandler.handleResponse("ERROR", HttpStatus.BAD_REQUEST, e.getMessage());
@@ -75,17 +76,15 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> getProducts(@RequestParam(required =  false, defaultValue = "0") int page,
-                                              @RequestParam(required =  false, defaultValue = "5") int limit,
-                                              @RequestParam(required =  false) String productName,
-                                              @RequestParam(required =  false) Sort.Direction sortType) {
+    public ResponseEntity<Object> getAllTodos() {
+        
         try {
-            Page<Product> productPage = productService.getRequestFilters(page, limit, productName, sortType);
-            return ResponseHandler.handleResponse("Successfully get product", HttpStatus.OK, productPage);
-            
-        }catch(Exception e){
+            List<Todo> todos = todoService.getAllTodos();
+            return ResponseHandler.handleResponse("Successfully get Todos", HttpStatus.OK, todos);
+        } catch (Exception e) {
             return ResponseHandler.handleResponse("ERROR", HttpStatus.BAD_REQUEST, e.getMessage());
         }
+      
     }
                                                 
                                               
